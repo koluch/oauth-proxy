@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,17 +39,13 @@ public class ProxyServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=http://koluch.ru/test/&scope=public_repo&state=123
-
         try {
-            String client_id = getString(req, "client_id");
-            String redirect_uri = getString(req, "redirect_uri");
+            String code = getString(req, "code");
+            String state = getString(req, "state");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
-
-
     }
 
     private static Integer rnd(Random random, Integer middle, Integer spread) {
