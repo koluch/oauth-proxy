@@ -1,6 +1,7 @@
 package ru.koluch.oauthProxy;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.Random;
 
 /**
@@ -11,7 +12,7 @@ public class Utils {
         return middle - spread + random.nextInt(spread * 2 + 1);
     }
 
-    private static Integer getInt(HttpServletRequest req, String key, Integer def) {
+    private static Integer getInt(HttpServletRequest req, String key, Integer def) throws ParseException {
         String parameter = req.getParameter(key);
         if(parameter!=null) {
             try {
@@ -21,7 +22,7 @@ public class Utils {
         return def;
     }
 
-    private static Integer getInt(HttpServletRequest req, String key) {
+    private static Integer getInt(HttpServletRequest req, String key) throws ParseException  {
         String parameter = req.getParameter(key);
         if(parameter!=null) {
             try {
@@ -31,7 +32,7 @@ public class Utils {
         throw new RuntimeException("Can't parse parameter "+key+" from '" + parameter + "'");
     }
 
-    static String getString(HttpServletRequest req, String key) {
+    static String getString(HttpServletRequest req, String key) throws ParseException {
         String parameter = req.getParameter(key);
         if(parameter!=null) {
             return parameter;

@@ -33,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,46 +47,39 @@ public class CallbackServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             // Parse incoming params
-            String code = null;
-            String state = null;
-            try {
-                code = getString(req, "code");
-                state = getString(req, "state");
-            } catch (Exception e) {
-                log.log(Level.SEVERE, e.getMessage());
-            }
+            String code = getString(req, "code");
+            String state = getString(req, "state");
 
             // Params for POST request
             String clientId = "";
             String client_secret = "";
             String redirect_uri = "http://localhost:8888/done";
 
-            // Build body
-            String body = "client_id=" + clientId + "&"
+            // Build params
+            String params = "client_id=" + clientId + "&"
                     + "client_secret=" + client_secret + "&"
                     + "code=" + code + "&"
                     + "redirect_uri=" + redirect_uri + "&"
                     + "state=" + state;
-            body = URLEncoder.encode(body, "UTF-8");
-            
+
             // Make http request
-            URL url = new URL("https://github.com/login/oauth/access_token");
+            URL url = new URL("https://github.com/login/oauth/access_token?" + URLEncoder.encode(params, "UTF-8"));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
-                
+
                 urlConnection.setRequestMethod("POST");
-//                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestProperty("Accept", "application/json");
                 urlConnection.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
-                urlConnection.setRequestProperty("Content-length", String.valueOf(body.length()));
+//                urlConnection.setRequestProperty("Content-length", String.valueOf(params.length()));
                 urlConnection.setConnectTimeout(5000);
                 urlConnection.setReadTimeout(5000);
-                urlConnection.setDoOutput(true);
+//                urlConnection.setDoOutput(true);
                 urlConnection.setDoInput(true);
                 urlConnection.connect();
 
-                try(BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(urlConnection.getOutputStream())) {
-                    bufferedOutputStream.write(body.getBytes());
-                }
+//                try(BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(urlConnection.getOutputStream())) {
+//                    bufferedOutputStream.write(params.getBytes());
+//                }
                 try(BufferedInputStream bufferedOutputStream = new BufferedInputStream(urlConnection.getInputStream())) {
                     byte[] buf = new byte[1024 * 8];
                     int len;
@@ -99,8 +93,8 @@ public class CallbackServlet extends HttpServlet {
                 urlConnection.disconnect();
             }
 
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
+        } catch (ParseException e) {
+            log.log(Level.SEVERE, e.getMessage());
         }
     }
     
