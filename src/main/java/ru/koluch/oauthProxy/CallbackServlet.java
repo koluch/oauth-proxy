@@ -21,6 +21,8 @@
 package ru.koluch.oauthProxy;
 
 
+import com.google.appengine.api.datastore.*;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.security.KeyFactory;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,35 +54,46 @@ public class CallbackServlet extends HttpServlet {
             String state = getString(req, "state");
 
             // Params for POST request
-            String clientId = "";
-            String client_secret = "";
-            String redirect_uri = "http://localhost:8888/done";
+            String redirect_uri = "http://localhost:8888/callback";
+            String clientId = "3b717f44eee01271305c"; //todo: get client id from params
+
+
+            // Fetch client secret from datastore
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            String clientSecret;
+            try {
+                Entity clientCridentials = datastore.get(new Entity("ClientCredentials", clientId).getKey());
+                if(!clientCridentials.getProperties().containsKey("client_secret")){
+                    throw new RuntimeException("Property 'client_secret' is null");
+                }
+                clientSecret = (String) clientCridentials.getProperty("client_secret");
+            } catch (EntityNotFoundException e) {
+                throw new RuntimeException("Can't find client secret");
+            }
+
 
             // Build params
-            String params = "client_id=" + clientId + "&"
-                    + "client_secret=" + client_secret + "&"
-                    + "code=" + code + "&"
-                    + "redirect_uri=" + redirect_uri + "&"
-                    + "state=" + state;
+            String params = "client_id=" + URLEncoder.encode(clientId, "UTF-8") + "&"
+                    + "client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") + "&"
+                    + "code=" + URLEncoder.encode(code, "UTF-8") + "&"
+                    + "redirect_uri=" + URLEncoder.encode(redirect_uri, "UTF-8") + "&"
+                    + "state=" + URLEncoder.encode(state, "UTF-8");
 
             // Make http request
-            URL url = new URL("https://github.com/login/oauth/access_token?" + URLEncoder.encode(params, "UTF-8"));
+            URL url = new URL("https://github.com/login/oauth/access_token?" + params);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
+
+                log.info("https://github.com/login/oauth/access_token?"  + params);
 
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setRequestProperty("Accept", "application/json");
                 urlConnection.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
-//                urlConnection.setRequestProperty("Content-length", String.valueOf(params.length()));
                 urlConnection.setConnectTimeout(5000);
                 urlConnection.setReadTimeout(5000);
-//                urlConnection.setDoOutput(true);
                 urlConnection.setDoInput(true);
                 urlConnection.connect();
 
-//                try(BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(urlConnection.getOutputStream())) {
-//                    bufferedOutputStream.write(params.getBytes());
-//                }
                 try(BufferedInputStream bufferedOutputStream = new BufferedInputStream(urlConnection.getInputStream())) {
                     byte[] buf = new byte[1024 * 8];
                     int len;

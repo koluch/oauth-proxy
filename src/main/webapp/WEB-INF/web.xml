@@ -6,19 +6,10 @@
         <servlet-class>ru.koluch.oauthProxy.CallbackServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>done</servlet-name>
-        <servlet-class>ru.koluch.oauthProxy.CallbackServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>callback</servlet-name>
         <url-pattern>/callback</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>done</servlet-name>
-        <url-pattern>/done</url-pattern>
-    </servlet-mapping>    
     
 </web-app>
