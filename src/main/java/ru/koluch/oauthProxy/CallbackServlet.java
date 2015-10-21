@@ -54,29 +54,31 @@ public class CallbackServlet extends HttpServlet {
             String state = getString(req, "state");
 
             // Params for POST request
-            String redirect_uri = "http://localhost:8888/callback";
             String clientId = "3b717f44eee01271305c"; //todo: get client id from params
-
 
             // Fetch client secret from datastore
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            String redirectUri;
             String clientSecret;
             try {
-                Entity clientCridentials = datastore.get(new Entity("ClientCredentials", clientId).getKey());
+                Entity clientCridentials = datastore.get(new Entity("AppAttributes", clientId).getKey());
                 if(!clientCridentials.getProperties().containsKey("client_secret")){
                     throw new RuntimeException("Property 'client_secret' is null");
                 }
+                if(!clientCridentials.getProperties().containsKey("redirect_uri")){
+                    throw new RuntimeException("Property 'redirect_uri' is null");
+                }
                 clientSecret = (String) clientCridentials.getProperty("client_secret");
+                redirectUri = (String) clientCridentials.getProperty("redirect_uri"); // "http://localhost:8888/callback"
             } catch (EntityNotFoundException e) {
-                throw new RuntimeException("Can't find client secret");
+                throw new RuntimeException("Can't find app attributes");
             }
-
 
             // Build params
             String params = "client_id=" + URLEncoder.encode(clientId, "UTF-8") + "&"
                     + "client_secret=" + URLEncoder.encode(clientSecret, "UTF-8") + "&"
                     + "code=" + URLEncoder.encode(code, "UTF-8") + "&"
-                    + "redirect_uri=" + URLEncoder.encode(redirect_uri, "UTF-8") + "&"
+                    + "redirect_uri=" + URLEncoder.encode(redirectUri, "UTF-8") + "&"
                     + "state=" + URLEncoder.encode(state, "UTF-8");
 
             // Make http request
