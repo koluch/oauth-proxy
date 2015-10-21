@@ -47,12 +47,16 @@ public class CallbackServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
+
+            // Parse client id from url
+            if(req.getPathInfo()==null) {
+                throw new RuntimeException("Client id is null");
+            }
+            String clientId = req.getPathInfo().substring(1);
+
             // Parse incoming params
             String code = getString(req, "code");
             String state = getString(req, "state");
-
-            // Params for POST request
-            String clientId = "3b717f44eee01271305c"; //todo: get client id from params
 
             // Fetch client secret from datastore
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -83,8 +87,6 @@ public class CallbackServlet extends HttpServlet {
             URL url = new URL("https://github.com/login/oauth/access_token?" + params);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
-
-                log.info("https://github.com/login/oauth/access_token?" + params);
 
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setRequestProperty("Accept", "application/json");

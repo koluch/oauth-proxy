@@ -8,7 +8,7 @@
 
     <servlet-mapping>
         <servlet-name>callback</servlet-name>
-        <url-pattern>/callback</url-pattern>
+        <url-pattern>/callback/*</url-pattern>
     </servlet-mapping>
 
     

@@ -11,7 +11,7 @@
 
     <script>
         document.getElementById('btnAuth').addEventListener('click', function(){
-            var url = 'https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=http://oauth-proxy-9000.appspot.com/callback&scope=public_repo&state=123';
+            var url = 'https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=https://oauth-proxy-9000.appspot.com/callback/3b717f44eee01271305c&scope=public_repo&state=123';
             var windowName = '_blank';
             var windowFeatures = 'height=200,width=200';
             window.open(url, windowName, windowFeatures);
