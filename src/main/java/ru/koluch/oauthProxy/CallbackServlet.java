@@ -28,9 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -86,7 +84,7 @@ public class CallbackServlet extends HttpServlet {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
 
-                log.info("https://github.com/login/oauth/access_token?"  + params);
+                log.info("https://github.com/login/oauth/access_token?" + params);
 
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setRequestProperty("Accept", "application/json");
@@ -96,14 +94,17 @@ public class CallbackServlet extends HttpServlet {
                 urlConnection.setDoInput(true);
                 urlConnection.connect();
 
+                StringBuilder responseBuilder = new StringBuilder();
                 try(BufferedInputStream bufferedOutputStream = new BufferedInputStream(urlConnection.getInputStream())) {
                     byte[] buf = new byte[1024 * 8];
                     int len;
-                    StringBuilder responseBuilder = new StringBuilder();
                     while((len = bufferedOutputStream.read(buf)) != -1){
                         responseBuilder.append(new String(buf, 0, len, "UTF-8"));
                     }
-                    log.info("Response: " + responseBuilder.toString());
+                }
+
+                try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()))){
+                    writer.write(responseBuilder.toString());
                 }
             } finally {
                 urlConnection.disconnect();
