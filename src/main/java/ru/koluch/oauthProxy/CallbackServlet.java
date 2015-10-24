@@ -60,8 +60,9 @@ public class CallbackServlet extends HttpServlet {
 
             // Fetch client secret from datastore
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            String redirectUri;
             String clientSecret;
+            String redirectUri;
+            String originRedirectUri;
             try {
                 Entity clientCridentials = datastore.get(new Entity("AppAttributes", clientId).getKey());
                 if(!clientCridentials.getProperties().containsKey("client_secret")){
@@ -70,8 +71,12 @@ public class CallbackServlet extends HttpServlet {
                 if(!clientCridentials.getProperties().containsKey("redirect_uri")){
                     throw new RuntimeException("Property 'redirect_uri' is null");
                 }
+                if(!clientCridentials.getProperties().containsKey("redirect_uri")){
+                    throw new RuntimeException("Property 'origin_redirect_uri' is null");
+                }
                 clientSecret = (String) clientCridentials.getProperty("client_secret");
-                redirectUri = (String) clientCridentials.getProperty("redirect_uri"); // "http://localhost:8888/callback"
+                redirectUri = (String) clientCridentials.getProperty("redirect_uri");
+                originRedirectUri = (String) clientCridentials.getProperty("origin_redirect_uri");
             } catch (EntityNotFoundException e) {
                 throw new RuntimeException("Can't find app attributes");
             }
@@ -86,6 +91,7 @@ public class CallbackServlet extends HttpServlet {
             // Make http request
             URL url = new URL("https://github.com/login/oauth/access_token?" + params);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            String response;
             try {
 
                 urlConnection.setRequestMethod("POST");
@@ -104,14 +110,18 @@ public class CallbackServlet extends HttpServlet {
                         responseBuilder.append(new String(buf, 0, len, "UTF-8"));
                     }
                 }
+                response = responseBuilder.toString();
 
-                try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()))){
-                    writer.write(responseBuilder.toString());
-                }
             } finally {
                 urlConnection.disconnect();
             }
 
+            String newLocation = originRedirectUri + "?response=" + response;
+            log.info("New location: " + newLocation);
+            resp.sendRedirect(newLocation);
+//            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()))){
+//                writer.write(response);
+//            }
         } catch (ParseException e) {
             log.log(Level.SEVERE, e.getMessage());
         }

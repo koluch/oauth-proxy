@@ -10,8 +10,14 @@
     <button id="btnAuth">Auth</button>
 
     <script>
-        document.getElementById('btnAuth').addEventListener('click', function(){
-            var url = 'https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=https://oauth-proxy-9000.appspot.com/callback/3b717f44eee01271305c&scope=public_repo&state=123';
+
+        window.onAuth = function(response){
+            console.log(response);
+        };
+
+        document.getElementById('btnAuth').addEventListener('click', function() {
+//            var url = 'https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=https://oauth-proxy-9000.appspot.com/callback/3b717f44eee01271305c&scope=public_repo&state=123';
+            var url = 'https://github.com/login/oauth/authorize?client_id=d4bbf00789ea2b38b428&redirect_uri=http://localhost:8888/callback/d4bbf00789ea2b38b428&scope=public_repo&state=123';
             var windowName = '_blank';
             var windowFeatures = 'height=200,width=200';
             window.open(url, windowName, windowFeatures);
