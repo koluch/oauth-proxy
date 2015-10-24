@@ -3,25 +3,27 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
-    <h1>Example</h1>
+    <!-- Page body -->
+    <h1>User information</h1>
+    <div id="user">
+        <p><b>You need to be authorized!</b></p>
+    </div>
+
+    <h1>Repositories</h1>
+    <div id="repos">
+        <p><b>You need to be authorized!</b></p>
+    </div>
 
     <button id="btnAuth">Auth</button>
 
-    <script>
 
-        window.onAuth = function(response){
-            console.log(response);
-        };
-
-        document.getElementById('btnAuth').addEventListener('click', function() {
-//            var url = 'https://github.com/login/oauth/authorize?client_id=3b717f44eee01271305c&redirect_uri=https://oauth-proxy-9000.appspot.com/callback/3b717f44eee01271305c&scope=public_repo&state=123';
-            var url = 'https://github.com/login/oauth/authorize?client_id=d4bbf00789ea2b38b428&redirect_uri=http://localhost:8888/callback/d4bbf00789ea2b38b428&scope=public_repo&state=123';
-            var windowName = '_blank';
-            var windowFeatures = 'height=200,width=200';
-            window.open(url, windowName, windowFeatures);
-        });
-    </script>
+    <!-- Include js -->
+    <script src="jquery-2.1.4.min.js"></script>
+    <script src="github.js"></script>
+    <script>window.Github = window.returnExportsGlobal</script>
+    <script src="main.js"></script>
 </body>
 </html>

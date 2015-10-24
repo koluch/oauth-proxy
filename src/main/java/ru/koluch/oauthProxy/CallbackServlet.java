@@ -115,13 +115,7 @@ public class CallbackServlet extends HttpServlet {
             } finally {
                 urlConnection.disconnect();
             }
-
-            String newLocation = originRedirectUri + "?response=" + response;
-            log.info("New location: " + newLocation);
-            resp.sendRedirect(newLocation);
-//            try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()))){
-//                writer.write(response);
-//            }
+            resp.sendRedirect(originRedirectUri + "?response=" + response + "&state=" + state);
         } catch (ParseException e) {
             log.log(Level.SEVERE, e.getMessage());
         }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h1>This page should be closed shortly</h1>
+
+    <script>
+
+        var params = {};
+        window.location.search.substring("?".length).split("&").forEach(function (pair) {
+            var split = pair.split("=");
+            params[split[0]] = split[1];
+        });
+
+        window.opener.onAuth(
+            params["state"],
+            JSON.parse(decodeURIComponent(params["response"]))
+        );
+
+        window.close();
+    </script>
+</body>
+</html>

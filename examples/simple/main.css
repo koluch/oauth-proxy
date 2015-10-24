@@ -1,0 +1,44 @@
+* {
+    font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+}
+
+#user {
+    /* border: 1px solid #EAEAEA; */
+    /* padding: 10px; */
+    display: inline-block;
+    /* background: #F7F7F7; */
+    /* clear: both; */
+}
+
+#user > div.info > div {
+    margin-bottom: 3pt;
+}
+
+#user .avatar {
+    width: 100px;
+    float: left;
+    border: 1px solid gainsboro;
+}
+
+#user .info {
+    float: right;
+    padding-left: 15px;
+    padding-right: 5px;
+}
+
+#user .name {
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+#user .login {
+    color: #9C9C9C;
+}
+
+h1 {
+    font-size: 18pt;
+    clear: both;
+}
+
+#repos > p {
+}
